@@ -1,0 +1,51 @@
+version: "3.1"
+
+services:
+    mariadb1:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3306:3306"
+            - "4444:4444"
+            - "4567:4567"
+            - "4568:4568"
+        volumes:
+            - ./db-mariadb1-data:/var/lib/mysql:rw
+            - ./db-mariadb1-log:/var/log/mysql/:rw
+            - ./configs/mariadb1.cnf:/etc/mysql/my.cnf
+    mariadb2:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3316:3306"
+            - "4454:4444"
+            - "4577:4567"
+            - "4578:4568"
+        volumes:
+            - ./db-mariadb2-data:/var/lib/mysql:rw
+            - ./db-mariadb2-log:/var/log/mysql/:rw
+            - ./configs/mariadb2.cnf:/etc/mysql/my.cnf
+    mariadb3:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3326:3306"
+            - "4464:4444"
+            - "4587:4567"
+            - "4588:4568"
+        volumes:
+            - ./db-mariadb3-data:/var/lib/mysql:rw
+            - ./db-mariadb3-log:/var/log/mysql/:rw
+            - ./configs/mariadb3.cnf:/etc/mysql/my.cnf

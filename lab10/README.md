@@ -1,0 +1,1 @@
+# Szimpla Galera Cluster
