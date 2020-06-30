@@ -1,0 +1,1 @@
+# Tradicionalis M->S1 M->S2 replikacio
