@@ -1,6 +1,23 @@
 version: "3.1"
 
 services:
+    bootstrap:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3306:3306"
+            - "4444:4444"
+            - "4567:4567"
+            - "4568:4568"
+        volumes:
+            - ./db-mariadb1-data:/var/lib/mysql:rw
+            - ./db-mariadb1-log:/var/log/mysql/:rw
+            - ./configs/mariadb1.cnf:/etc/mysql/my.cnf
+        command: mysqld --wsrep-new-cluster
     mariadb1:
         image: mariadb:10.3
         environment:
