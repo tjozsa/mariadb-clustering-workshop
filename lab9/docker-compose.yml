@@ -1,0 +1,49 @@
+version: "3.1"
+
+services:
+    master: 
+        image: mariadb:10.3.22
+        restart: always
+        networks: 
+            - replicanet
+        hostname: master
+        volumes:
+            - ./db-master-data:/var/lib/mysql:rw
+            - ./db-master-log:/var/log/mysql/:rw
+            - ./configs/master.cnf:/etc/mysql/my.cnf
+        environment:
+            MYSQL_ROOT_PASSWORD: "mastersecret"
+
+    slave1: 
+        image: mariadb:10.3.22
+        restart: always
+        depends_on:
+            - master
+        networks: 
+            - replicanet
+        hostname: slave1
+        volumes:
+            - ./db-slave1-data:/var/lib/mysql:rw
+            - ./db-slave1-log:/var/log/mysql/:rw
+            - ./configs/slave1.cnf:/etc/mysql/my.cnf
+        environment:
+            MYSQL_ROOT_PASSWORD: "slave1secret"
+
+    slave2: 
+        image: mariadb:10.3.22
+        restart: always
+        depends_on:
+            - slave1
+        networks: 
+            - replicanet
+        hostname: slave2
+        volumes:
+            - ./db-slave2-data:/var/lib/mysql:rw
+            - ./db-slave2-log:/var/log/mysql/:rw
+            - ./configs/slave2.cnf:/etc/mysql/my.cnf
+        environment:
+            MYSQL_ROOT_PASSWORD: "slave2secret"
+
+
+networks:
+    replicanet:
