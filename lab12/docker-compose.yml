@@ -1,0 +1,113 @@
+version: "3.1"
+
+services:
+    mariadb1:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3306:3306"
+        expose:
+            - 4444
+            - 4567
+            - 4568  
+        volumes:
+            - ./db-mariadb1-data:/var/lib/mysql:rw
+            - ./db-mariadb1-log:/var/log/:rw
+            - ./configs/mariadb1.cnf:/etc/mysql/my.cnf
+        # command: mysqld --wsrep-new-cluster
+    mariadb2:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3316:3306"
+        expose:
+            - 4444
+            - 4567
+            - 4568
+        volumes:
+            - ./db-mariadb2-data:/var/lib/mysql:rw
+            - ./db-mariadb2-log:/var/log/:rw
+            - ./configs/mariadb2.cnf:/etc/mysql/my.cnf
+    mariadb3:
+        image: mariadb:10.3
+        environment:
+            MYSQL_ROOT_PASSWORD: "root_password"
+            MYSQL_DATABASE: "mydb"
+            MYSQL_USER: "cluster_user"
+            MYSQL_PASSWORD: "clusterpass"
+        ports:
+            - "3326:3306"
+        expose:
+            - 4444
+            - 4567
+            - 4568
+        volumes:
+            - ./db-mariadb3-data:/var/lib/mysql:rw
+            - ./db-mariadb3-log:/var/log/:rw
+            - ./configs/mariadb3.cnf:/etc/mysql/my.cnf
+
+    maxscale:
+        image: mariadb/maxscale:latest
+        depends_on:
+            - mariadb1
+            - mariadb2
+            - mariadb3
+        volumes:
+            - ./maxscale.cnf.d:/etc/maxscale.cnf.d
+        ports:
+            - "4006:4006"  # galera port
+            - "8989:8989"  # REST API port
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080
+
+    # grafana used for graphing mysql data
+    grafana:
+        image: grafana/grafana
+        ports:
+        - '80:3000'
+        environment:
+        GF_INSTALL_PLUGINS: percona-percona-app
+
+    # tool to connect to mysql instance, and allow prometheus to collect mysql stats
+    prom_mysql_exporter1:
+        image: prom/mysqld-exporter
+        ports:
+        - '9104:9104'
+        environment:
+        DATA_SOURCE_NAME: root:root_password@(mariadb1:3306)/myDb
+    
+    prom_mysql_exporter2:
+        image: prom/mysqld-exporter
+        ports:
+        - '9105:9104'
+        environment:
+        DATA_SOURCE_NAME: root:root_password@(mariadb2:3306)/myDb
+    
+    prom_mysql_exporter3:
+        image: prom/mysqld-exporter
+        ports:
+        - '9106:9104'
+        environment:
+        DATA_SOURCE_NAME: root:root_password@(mariadb3:3306)/myDb
+    
+    # prometheus stores and handles timeseries data for statistics around mysql
+    prometheus:
+        image: prom/prometheus
+        volumes:
+        - ./prometheus:/etc/prometheus
+        links:
+        - prom_mysql_exporter
+        ports:
+        - '9090:9090'

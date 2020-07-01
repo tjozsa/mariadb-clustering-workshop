@@ -1,0 +1,47 @@
+[server1]
+type=server
+address=mariadb1
+port=3306
+protocol=MariaDBBackend
+
+[server2]
+type=server
+address=mariadb2
+port=3306
+protocol=MariaDBBackend
+
+[server3]
+type=server
+address=mariadb3
+port=3306
+protocol=MariaDBBackend
+
+# Monitoring for the servers
+[GaleraMonitor]
+type=monitor
+module=galeramon
+servers=server1,server2,server3
+user=root
+password=root_password
+monitor_interval=1000
+
+# Service definitions
+# Service Definition for a read-only service and a read/write splitting service.
+
+# Galera router service
+[GaleraService]
+type=service
+router=readwritesplit
+servers=server1,server2,server3
+user=root
+password=root_password
+
+# Listener definitions for the services
+# Listeners represent the ports the services will listen on.
+
+# Galera cluster listener
+[GaleraListener]
+type=listener
+service=GaleraService
+protocol=MySQLClient
+port=4006
