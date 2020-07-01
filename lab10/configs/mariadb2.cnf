@@ -16,9 +16,9 @@ wsrep_provider                  = /usr/lib/galera/libgalera_smm.so
 wsrep_sst_method                = mariabackup
 wsrep_cluster_name              = mini_galera_cluster
 wsrep_cluster_address           = gcomm://mariadb1,mariadb2,mariadb3
-wsrep_node_name                 = mariadb1
-wsrep_node_address              = mariadb1
-wsrep_sst_auth                  = root:root_password
+wsrep_node_name                 = mariadb2
+wsrep_node_address              = mariadb2
+# wsrep_sst_auth                  = root:root_password
 
 bind-address                    = 0.0.0.0
 init-connect                    = 'SET NAMES utf8mb4'

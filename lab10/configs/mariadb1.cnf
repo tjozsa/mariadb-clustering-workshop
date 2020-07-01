@@ -20,7 +20,7 @@ wsrep_cluster_name              = mini_galera_cluster
 ### Only for bootstrapping the cluster, later restart the server with the alternative wsrep_cluster_address line
 ##
 wsrep_cluster_address           = gcomm://
-# wsrep_cluster_address           = gcomm://mariadb1,mariadb2,mariadb3
+#wsrep_cluster_address           = gcomm://mariadb1,mariadb2,mariadb3
 wsrep_node_name                 = mariadb1
 wsrep_node_address              = mariadb1
 wsrep_sst_auth                  = root:root_password
